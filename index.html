@@ -627,56 +627,76 @@ function parseCSVLine(line) {
 }
 
 function parseSheetCSV(csv) {
-  const lines = csv.split(/\r?\n/).filter(l=>l.trim().replace(/,/g,'')!=='');
-  if (!lines.length) return [];
+  const MONTH_NAMES = ['january','february','march','april','may','june','july','august','september','october','november','december'];
 
-  // Auto-detect headers
-  const firstCols = parseCSVLine(lines[0]).map(c=>c.toLowerCase().replace(/[\s_]/g,''));
-  const hasHeader = firstCols.some(c=>['name','fullname','department','dept','role','birthday','dob','birthdate'].includes(c));
-
-  let ci={name:0,dept:1,role:2,date:3};
-  if(hasHeader){
-    firstCols.forEach((c,i)=>{
-      if(['name','fullname','employeename'].includes(c))                      ci.name=i;
-      if(['department','dept','division','team'].includes(c))                 ci.dept=i;
-      if(['role','position','jobtitle','title'].includes(c))                  ci.role=i;
-      if(['birthday','dob','date','birthdate','dateofbirth','birthmonth','birth_month'].includes(c)) ci.date=i;
-      // Also handle split month/day columns
-    });
+  function monthNameToNum(s) {
+    if (!s) return 0;
+    const n = parseInt(s);
+    if (!isNaN(n) && n >= 1 && n <= 12) return n;
+    const idx = MONTH_NAMES.indexOf(String(s).toLowerCase().trim());
+    return idx >= 0 ? idx + 1 : 0;
   }
 
-  // Check for split month/day/year columns
-  let hasSplit = false;
-  let ciMonth=-1,ciDay=-1,ciYear=-1;
-  firstCols.forEach((c,i)=>{
-    if(['birthmonth','birth_month','month'].includes(c)) { ciMonth=i; hasSplit=true; }
-    if(['birthday','birth_day','day'].includes(c) && c!=='birthday') { ciDay=i; hasSplit=true; }
-    if(['birthyear','birth_year','year'].includes(c)) ciYear=i;
-  });
+  const lines = csv.split(/\r?\n/).filter(l => l.trim().replace(/,/g,'') !== '');
+  if (!lines.length) return [];
+
+  const firstCols = parseCSVLine(lines[0]).map(c => c.toLowerCase().replace(/[\s_]/g,''));
+  const hasHeader = firstCols.some(c => ['name','fullname','department','dept','role','birthday','dob','birthmonth','birthdate','birthmonth'].includes(c));
+
+  // Column index map
+  let ci = { name:-1, dept:-1, role:-1, date:-1, month:-1, day:-1, year:-1 };
+
+  if (hasHeader) {
+    firstCols.forEach((c, i) => {
+      if (['name','fullname','employeename'].includes(c))                        ci.name=i;
+      if (['department','dept','division','team'].includes(c))                   ci.dept=i;
+      if (['role','position','jobtitle','title'].includes(c))                    ci.role=i;
+      if (['birthday','dob','date','birthdate','dateofbirth'].includes(c))       ci.date=i;
+      if (['birthmonth','birth_month','bmonth','month'].includes(c))             ci.month=i;
+      if (['birthdate','birth_date'].includes(c) && ci.month>-1)                {} // skip if already split
+      if (['birthday','birth_day','bday','day'].includes(c) && c!=='birthday')   ci.day=i;
+      if (['birthyear','birth_year','byear','year'].includes(c))                 ci.year=i;
+    });
+  } else {
+    // Default column order if no header: Name, Dept, Role, Month, Day, Year
+    ci = { name:0, dept:1, role:2, date:-1, month:3, day:4, year:5 };
+  }
+
+  // If name column not found, default to 0
+  if (ci.name === -1) ci.name = 0;
+  if (ci.dept === -1) ci.dept = 1;
+  if (ci.role === -1) ci.role = 2;
+
+  const hasSplit = ci.month > -1 && ci.day > -1;
 
   const dataLines = hasHeader ? lines.slice(1) : lines;
   const result = [];
 
-  dataLines.forEach((line,idx)=>{
+  dataLines.forEach((line, idx) => {
     const cols = parseCSVLine(line);
-    const name = (cols[ci.name]||'').trim();
+    const name = (cols[ci.name] || '').trim();
     if (!name) return;
-    const dept = (cols[ci.dept]||'').trim();
-    const role = (cols[ci.role]||'').trim();
+    const dept = (cols[ci.dept] || '').trim();
+    const role = (cols[ci.role] || '').trim();
 
     let parsed = null;
-    if(hasSplit && ciMonth>-1 && ciDay>-1){
-      const mo=parseInt(cols[ciMonth])||0;
-      const dy=parseInt(cols[ciDay])||0;
-      const yr=ciYear>-1?parseInt(cols[ciYear])||0:0;
-      if(mo&&dy) parsed={year:yr,month:mo,day:dy};
-    } else {
-      parsed = parseDate(cols[ci.date]||'');
+
+    if (hasSplit) {
+      const mo = monthNameToNum(cols[ci.month] || '');
+      const dy = parseInt(cols[ci.day]) || 0;
+      const yr = ci.year > -1 ? parseInt(cols[ci.year]) || 0 : 0;
+      if (mo && dy) parsed = { year: yr, month: mo, day: dy };
+    } else if (ci.date > -1) {
+      parsed = parseDate(cols[ci.date] || '');
     }
 
-    if(!parsed) return;
-    result.push({ id:'sheet_'+idx+'_'+name.replace(/\s/g,'_'), name, dept, role, parsed, _fromSheet:true });
+    if (!parsed) return;
+    result.push({
+      id: 'sheet_' + idx + '_' + name.replace(/\s/g,'_'),
+      name, dept, role, parsed, _fromSheet: true
+    });
   });
+
   return result;
 }
 
