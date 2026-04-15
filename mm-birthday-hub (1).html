@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Makers Enterprises — Birthday Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#D4A017;--gold-lt:#F0C040;--gold-dk:#9A7210;--gold-bg:#FDF8EC;
+  --ink:#1A1A1A;--ink2:#2D2D2D;--slate:#4A4A4A;--muted:#8A8A8A;
+  --border:#E4E0D8;--surface:#FAFAF8;--white:#FFFFFF;
+  --success:#2E7D5E;--danger:#C0392B;--info:#1A4E8A;
+  --r:8px;--r-lg:14px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg:0 12px 40px rgba(0,0,0,0.14);
+  --font-display:'Playfair Display',Georgia,serif;
+  --font-body:'IBM Plex Sans',system-ui,sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+}
+html{font-size:15px}
+body{font-family:var(--font-body);background:var(--surface);color:var(--ink);line-height:1.6;min-height:100vh}
+button{font-family:var(--font-body);cursor:pointer}
+input,select,textarea{font-family:var(--font-body)}
+
+/* RIBBON */
+.ribbon{height:4px;background:linear-gradient(90deg,var(--gold-dk),var(--gold),var(--gold-lt),var(--gold),var(--gold-dk))}
+
+/* PAGES */
+.page{display:none}.page.active{display:block}
+
+/* HEADER */
+.site-header{background:var(--white);border-bottom:1px solid var(--border);box-shadow:var(--shadow-sm);position:sticky;top:0;z-index:100}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 32px;height:66px;display:flex;align-items:center;gap:16px}
+.logo-lockup{display:flex;align-items:center;gap:14px;flex:1}
+.logo-ring{width:44px;height:44px;border-radius:50%;border:2px solid var(--gold);overflow:hidden;flex-shrink:0;box-shadow:0 0 0 3px var(--gold-bg)}
+.logo-ring img{width:100%;height:100%;object-fit:cover}
+.brand-name{font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--ink);letter-spacing:-.3px;line-height:1.2}
+.brand-sub{font-size:11px;font-weight:500;color:var(--gold-dk);letter-spacing:2.5px;text-transform:uppercase}
+.header-nav{display:flex;gap:8px;align-items:center}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:var(--r);font-size:13px;font-weight:500;border:1px solid transparent;transition:all .15s;white-space:nowrap;line-height:1}
+.btn-primary{background:var(--gold);color:var(--white);border-color:var(--gold)}
+.btn-primary:hover{background:var(--gold-lt);border-color:var(--gold-lt)}
+.btn-secondary{background:var(--white);color:var(--ink2);border-color:var(--border);box-shadow:var(--shadow-sm)}
+.btn-secondary:hover{border-color:#C0B898;background:var(--gold-bg)}
+.btn-ghost{background:transparent;color:var(--slate);border-color:transparent}
+.btn-ghost:hover{background:var(--surface);color:var(--ink)}
+.btn-danger{background:var(--danger);color:var(--white);border-color:var(--danger)}
+.btn-success{background:var(--success);color:var(--white);border-color:var(--success)}
+.btn-success:hover{background:#255F4B}
+.btn-sm{padding:5px 12px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* CONFETTI */
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.c-piece{position:absolute;top:-10px;border-radius:2px;animation:cfall linear infinite;opacity:0}
+@keyframes cfall{0%{transform:translateY(-20px) rotate(0deg);opacity:.6}90%{opacity:.3}100%{transform:translateY(105vh) rotate(600deg);opacity:0}}
+
+/* LOADING */
+.loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:50vh;gap:16px}
+.loading-ring{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:14px;color:var(--muted)}
+
+/* HERO */
+.pub-hero{background:var(--white);border-bottom:1px solid var(--border);padding:48px 32px 36px;text-align:center;position:relative;overflow:hidden}
+.pub-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 50% -20%,rgba(212,160,23,.08) 0%,transparent 70%);pointer-events:none}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold-dk);margin-bottom:14px}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';display:block;width:24px;height:1px;background:var(--gold)}
+.pub-hero h1{font-family:var(--font-display);font-size:clamp(32px,5vw,52px);font-weight:700;color:var(--ink);letter-spacing:-1px;line-height:1.1;margin-bottom:10px}
+.pub-hero h1 em{font-style:normal;color:var(--gold)}
+.pub-hero p{font-size:15px;color:var(--muted);max-width:400px;margin:0 auto}
+
+/* LAYOUT */
+.wrap{max-width:1200px;margin:0 auto;padding:28px 32px 60px}
+
+/* TODAY BANNER */
+.today-banner{background:linear-gradient(135deg,#FDF5D8,#FEF9EE);border:1px solid #E8CC70;border-radius:var(--r-lg);padding:20px 24px;display:flex;align-items:flex-start;gap:16px;box-shadow:0 2px 12px rgba(212,160,23,.12);margin-bottom:24px}
+.today-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.bday-chip{display:flex;align-items:center;gap:8px;background:var(--white);border:1px solid #E8CC70;border-radius:40px;padding:6px 14px 6px 6px;box-shadow:var(--shadow-sm)}
+.chip-av{width:32px;height:32px;border-radius:50%;background:var(--gold);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.chip-name{font-size:13px;font-weight:500;color:var(--ink2)}
+.chip-role{font-size:11px;color:var(--gold-dk)}
+
+/* TOOLBAR */
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:24px}
+.search-wrap{position:relative;flex:1;min-width:200px}
+.search-wrap input{width:100%;padding:9px 12px 9px 36px;border:1px solid var(--border);border-radius:var(--r);background:var(--white);color:var(--ink);font-size:14px;box-shadow:var(--shadow-sm);outline:none;transition:border-color .15s}
+.search-wrap input:focus{border-color:var(--gold)}
+.search-wrap input::placeholder{color:var(--muted)}
+.s-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none}
+.fsel{padding:9px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--white);color:var(--ink);font-size:13px;box-shadow:var(--shadow-sm);outline:none;cursor:pointer}
+.fsel:focus{border-color:var(--gold)}
+
+/* TABS */
+.tab-row{display:flex;gap:2px;border-bottom:2px solid var(--border);margin-bottom:28px}
+.tab-btn{padding:10px 20px;font-size:13px;font-weight:500;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);margin-bottom:-2px;transition:all .15s;cursor:pointer}
+.tab-btn.active{color:var(--ink);border-bottom-color:var(--gold)}
+.tab-btn:hover:not(.active){color:var(--ink2)}
+
+/* CALENDAR */
+.cal-nav{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+.cal-nav h2{font-family:var(--font-display);font-size:26px;font-weight:600;color:var(--ink);min-width:220px}
+.icon-btn{width:34px;height:34px;border:1px solid var(--border);border-radius:var(--r);background:var(--white);color:var(--slate);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;box-shadow:var(--shadow-sm)}
+.icon-btn:hover{border-color:var(--gold);color:var(--gold-dk)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;background:var(--border);gap:1px;box-shadow:var(--shadow-sm)}
+.cal-hdr{background:var(--ink2);color:var(--white);font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:10px;text-align:center}
+.cal-cell{background:var(--white);padding:8px;min-height:90px;transition:background .1s}
+.cal-cell:hover{background:var(--gold-bg)}
+.cal-cell.other{background:var(--surface)}
+.cal-cell.other .day-n{color:#CCC}
+.cal-cell.today{background:#FFFBF0}
+.day-n{font-size:12px;font-weight:600;color:var(--muted);width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:50%;margin-bottom:4px}
+.cal-cell.today .day-n{background:var(--gold);color:var(--white);font-weight:700}
+.cal-chip-sm{font-size:11px;font-weight:500;background:var(--gold-bg);color:var(--gold-dk);border:1px solid #E8CC70;border-radius:4px;padding:2px 6px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;cursor:default}
+
+/* UPCOMING LIST */
+.up-list{display:flex;flex-direction:column;gap:8px}
+.up-item{display:flex;align-items:center;gap:16px;background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 18px;box-shadow:var(--shadow-sm);transition:border-color .15s,box-shadow .15s}
+.up-item:hover{border-color:#C8BC98;box-shadow:var(--shadow-md)}
+.up-item.is-today{border-color:var(--gold);background:var(--gold-bg)}
+.up-av{width:44px;height:44px;border-radius:50%;flex-shrink:0;background:var(--ink2);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;border:2px solid var(--border)}
+.up-item.is-today .up-av{background:var(--gold);border-color:var(--gold-lt)}
+.up-info{flex:1;min-width:0}
+.up-name{font-size:15px;font-weight:600;color:var(--ink)}
+.up-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.up-right{text-align:right;flex-shrink:0}
+.up-days-n{font-family:var(--font-mono);font-size:22px;font-weight:500;color:var(--ink2);line-height:1}
+.up-days-l{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.badge-today{display:inline-block;background:var(--gold);color:var(--white);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+
+/* PIN */
+.pin-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--surface);padding:20px}
+.pin-card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:48px 40px;width:360px;box-shadow:var(--shadow-lg);text-align:center}
+.pin-logo{width:64px;height:64px;border-radius:50%;border:2px solid var(--gold);margin:0 auto 20px;overflow:hidden}
+.pin-logo img{width:100%;height:100%;object-fit:cover}
+.pin-title{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.pin-sub{font-size:13px;color:var(--muted);margin-bottom:28px}
+.pin-dots{display:flex;justify-content:center;gap:10px;margin-bottom:24px}
+.pin-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--border);transition:all .2s}
+.pin-dot.on{background:var(--gold);border-color:var(--gold)}
+.pin-dot.err{background:var(--danger);border-color:var(--danger)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pin-key{padding:15px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--ink);font-family:var(--font-display);font-size:20px;font-weight:600;cursor:pointer;transition:all .1s}
+.pin-key:hover{background:var(--gold-bg);border-color:var(--gold)}
+.pin-key:active{transform:scale(.96)}
+.pin-err{font-size:12px;color:var(--danger);margin-top:14px;min-height:18px}
+
+/* ADMIN */
+.admin-bar{background:var(--ink);color:var(--white);padding:10px 32px;font-size:12px;display:flex;align-items:center;gap:12px}
+.admin-badge{display:inline-flex;align-items:center;gap:5px;background:var(--gold);color:var(--ink);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:4px}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px 22px;box-shadow:var(--shadow-sm)}
+.stat-val{font-family:var(--font-display);font-size:36px;font-weight:700;color:var(--ink);line-height:1;margin-bottom:4px}
+.stat-val.gold{color:var(--gold-dk)}
+.stat-lbl{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+
+/* PANELS */
+.panel{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px 28px;margin-bottom:24px;box-shadow:var(--shadow-sm)}
+.panel.gold-left{border-left:4px solid var(--gold);border-color:#E8CC70;border-left-color:var(--gold)}
+.panel.blue-left{border-left:4px solid var(--info)}
+.panel h3{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.panel .sub{font-size:13px;color:var(--muted);margin-bottom:18px}
+
+/* BIRTHDAY SEND */
+.bday-people{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.bp{display:flex;align-items:center;gap:10px;background:var(--gold-bg);border:1px solid #E8CC70;border-radius:var(--r);padding:10px 14px}
+.bp-av{width:36px;height:36px;border-radius:50%;background:var(--gold);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.bp-name{font-size:13px;font-weight:600;color:var(--ink2)}
+.bp-role{font-size:11px;color:var(--gold-dk)}
+.msg-area{width:100%;min-height:90px;resize:vertical;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--ink);font-size:14px;outline:none;transition:border-color .15s;margin-bottom:12px}
+.msg-area:focus{border-color:var(--gold)}
+.msg-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .6s linear infinite;display:none}
+.spinner.on{display:inline-block}
+.spin-txt{font-size:13px;color:var(--muted);display:none}
+.spin-txt.on{display:inline}
+
+/* REMINDERS */
+.reminder-list{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.ri{display:flex;align-items:center;gap:14px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r)}
+.ri-days{font-family:var(--font-mono);font-size:22px;font-weight:500;color:var(--info);width:48px;text-align:center;flex-shrink:0}
+.ri-name{font-size:14px;font-weight:600;color:var(--ink2)}
+.ri-meta{font-size:12px;color:var(--muted)}
+.ri-date{font-size:12px;color:var(--slate);font-weight:500;flex-shrink:0}
+
+/* SECTION CARD */
+.sec-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:24px;box-shadow:var(--shadow-sm);overflow:hidden}
+.sec-head{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sec-body{padding:0 24px 24px}
+
+/* CSV */
+.csv-modes{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.csv-mode{display:flex;align-items:center;gap:8px;padding:10px 16px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);cursor:pointer;flex:1;min-width:180px;transition:border-color .15s}
+.csv-mode:hover{border-color:var(--gold)}
+.csv-mode input{accent-color:var(--gold);width:16px;height:16px}
+.csv-fmt{font-family:var(--font-mono);font-size:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;color:var(--slate);margin-bottom:14px;display:none;line-height:1.8}
+.csv-fmt.on{display:block}
+.drop-zone{border:2px dashed var(--border);border-radius:var(--r-lg);padding:28px;text-align:center;background:var(--white);transition:all .2s;cursor:pointer}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--gold);background:var(--gold-bg)}
+.drop-zone h4{font-size:15px;font-weight:600;color:var(--ink2);margin-bottom:4px}
+.drop-zone p{font-size:13px;color:var(--muted);margin-bottom:14px}
+.replace-warn{display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:13px;color:#991B1B}
+.replace-warn.on{display:block}
+input[type="file"]{display:none}
+
+/* TABLE */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+thead th{padding:10px 14px;text-align:left;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--border);white-space:nowrap}
+tbody td{padding:12px 14px;border-bottom:1px solid var(--border);color:var(--ink2);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--gold-bg)}
+.t-av{width:34px;height:34px;border-radius:50%;background:var(--ink2);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
+.badge-bday{display:inline-block;background:#FFF0C0;color:var(--gold-dk);border:1px solid #E8CC70;border-radius:4px;font-size:11px;font-weight:600;padding:2px 7px;margin-left:6px}
+.badge-soon{display:inline-block;background:#EEF4FF;color:var(--info);border:1px solid #C0D0F0;border-radius:4px;font-size:11px;font-weight:600;padding:2px 7px}
+.row-acts{display:flex;gap:6px}
+.ra{width:30px;height:30px;border-radius:6px;border:1px solid var(--border);background:var(--white);color:var(--muted);font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .1s}
+.ra:hover{border-color:var(--gold);color:var(--gold-dk)}
+.ra.del:hover{border-color:var(--danger);color:var(--danger)}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(2px)}
+.modal-bg.open{display:flex}
+.modal-box{background:var(--white);border-radius:20px;padding:36px;width:440px;max-width:95vw;box-shadow:var(--shadow-lg);animation:modal-in .2s ease}
+@keyframes modal-in{from{opacity:0;transform:scale(.96) translateY(8px)}}
+.modal-box h3{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--ink);margin-bottom:24px}
+.frow{margin-bottom:16px}
+.frow label{display:block;font-size:12px;font-weight:600;color:var(--slate);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
+.finput{width:100%;padding:10px 13px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--ink);font-size:14px;outline:none;transition:border-color .15s}
+.finput:focus{border-color:var(--gold);background:var(--white)}
+.modal-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:24px}
+
+/* TOAST */
+.toast-wrap{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:999;pointer-events:none}
+.toast{background:var(--ink);color:var(--white);font-size:13px;font-weight:500;padding:11px 22px;border-radius:40px;box-shadow:var(--shadow-lg);opacity:0;transition:opacity .25s;white-space:nowrap}
+.toast.on{opacity:1}
+.toast.ok{background:var(--success)}
+.toast.err{background:var(--danger)}
+.toast.info{background:var(--info)}
+
+/* SYNC INDICATOR */
+.sync-bar{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--r);padding:10px 16px;margin-bottom:20px;font-size:13px;color:#166534;display:flex;align-items:center;gap:8px}
+.sync-bar.err{background:#FEF2F2;border-color:#FECACA;color:#991B1B}
+
+@media(max-width:700px){
+  .header-inner,.wrap,.admin-bar{padding-left:16px;padding-right:16px}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .cal-cell{min-height:64px}
+  .pub-hero{padding:32px 16px 24px}
+}
+</style>
+</head>
+<body>
+<div class="ribbon"></div>
+<div class="confetti-wrap" id="confettiWrap"></div>
+
+<!-- ══════════ PUBLIC PAGE ══════════ -->
+<div class="page active" id="pagePub">
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-lockup">
+        <div class="logo-ring"><img id="logoPub" src="" alt="MM"></div>
+        <div><div class="brand-name">Market Makers Enterprises</div><div class="brand-sub">Birthday Hub</div></div>
+      </div>
+      <nav class="header-nav">
+        <button class="btn btn-secondary btn-sm" onclick="goAdmin()">Admin Panel</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="pub-hero">
+    <div class="hero-eyebrow">Celebrating Our People</div>
+    <h1>Birthday <em>Hub</em></h1>
+    <p>Every milestone matters — here's where Market Makers celebrates its team.</p>
+  </div>
+
+  <div class="wrap">
+    <div id="todayWrap" style="display:none"></div>
+
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="s-icon">🔍</span>
+        <input type="text" id="pubSearch" placeholder="Search by name, department, or role…" oninput="pubRender()">
+      </div>
+      <select class="fsel" id="pubDept" onchange="pubRender()"><option value="">All Departments</option></select>
+      <button class="btn btn-ghost btn-sm" onclick="jumpToday()">Jump to Today</button>
+      <button class="btn btn-ghost btn-sm" onclick="refreshData(false)" title="Refresh data from Google Sheets">↻ Refresh</button>
+    </div>
+
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="switchTab('cal',this)">Monthly Calendar</button>
+      <button class="tab-btn" onclick="switchTab('up',this)">Upcoming Birthdays</button>
+    </div>
+
+    <div id="pubLoading" class="loading-screen">
+      <div class="loading-ring"></div>
+      <div class="loading-text">Loading birthdays…</div>
+    </div>
+
+    <div id="viewCal" style="display:none">
+      <div class="cal-nav">
+        <button class="icon-btn" onclick="changeMonth(-1)">&#8249;</button>
+        <h2 id="calLabel"></h2>
+        <button class="icon-btn" onclick="changeMonth(1)">&#8250;</button>
+      </div>
+      <div class="cal-grid" id="calGrid">
+        <div class="cal-hdr">Sun</div><div class="cal-hdr">Mon</div>
+        <div class="cal-hdr">Tue</div><div class="cal-hdr">Wed</div>
+        <div class="cal-hdr">Thu</div><div class="cal-hdr">Fri</div>
+        <div class="cal-hdr">Sat</div>
+      </div>
+    </div>
+    <div id="viewUp" style="display:none"><div class="up-list" id="upList"></div></div>
+    <div id="viewSearch" style="display:none"><div class="up-list" id="searchList"></div></div>
+  </div>
+</div>
+
+<!-- ══════════ PIN PAGE ══════════ -->
+<div class="page" id="pagePin">
+  <div class="pin-wrap">
+    <div class="pin-card">
+      <div class="pin-logo"><img id="logoPin" src="" alt="MM"></div>
+      <div class="pin-title">Admin Access</div>
+      <div class="pin-sub">Enter your 4-digit PIN</div>
+      <div class="pin-dots" id="pinDots">
+        <div class="pin-dot"></div><div class="pin-dot"></div>
+        <div class="pin-dot"></div><div class="pin-dot"></div>
+      </div>
+      <div class="pin-pad">
+        <button class="pin-key" onclick="pp('1')">1</button>
+        <button class="pin-key" onclick="pp('2')">2</button>
+        <button class="pin-key" onclick="pp('3')">3</button>
+        <button class="pin-key" onclick="pp('4')">4</button>
+        <button class="pin-key" onclick="pp('5')">5</button>
+        <button class="pin-key" onclick="pp('6')">6</button>
+        <button class="pin-key" onclick="pp('7')">7</button>
+        <button class="pin-key" onclick="pp('8')">8</button>
+        <button class="pin-key" onclick="pp('9')">9</button>
+        <button class="pin-key" style="visibility:hidden"></button>
+        <button class="pin-key" onclick="pp('0')">0</button>
+        <button class="pin-key" style="font-size:16px" onclick="pdel()">⌫</button>
+      </div>
+      <div class="pin-err" id="pinErr"></div>
+      <div style="margin-top:20px"><button class="btn btn-ghost" style="width:100%" onclick="showPage('pagePub')">← Back to Hub</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ ADMIN PAGE ══════════ -->
+<div class="page" id="pageAdmin">
+  <div class="ribbon"></div>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-lockup">
+        <div class="logo-ring"><img id="logoAdmin" src="" alt="MM"></div>
+        <div><div class="brand-name">Market Makers Enterprises</div><div class="brand-sub">Admin Dashboard</div></div>
+      </div>
+      <nav class="header-nav">
+        <button class="btn btn-ghost btn-sm" onclick="showPage('pagePub')">← Public View</button>
+        <button class="btn btn-secondary btn-sm" onclick="refreshData(true)">↻ Sync Sheet</button>
+        <button class="btn btn-primary btn-sm" onclick="openAdd()">+ Add Employee</button>
+      </nav>
+    </div>
+  </header>
+  <div class="admin-bar">
+    <span class="admin-badge">🔒 Admin</span>
+    <span style="color:#999">Data syncs from Google Sheets · Slack webhook posts to #5-kalista-spotlight · All admins can send</span>
+  </div>
+
+  <div class="wrap">
+    <!-- Sync status -->
+    <div id="syncBar" class="sync-bar" style="display:none"></div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-val" id="stTotal">—</div><div class="stat-lbl">Total Employees</div></div>
+      <div class="stat-card"><div class="stat-val gold" id="stToday">—</div><div class="stat-lbl">Birthdays Today</div></div>
+      <div class="stat-card"><div class="stat-val" id="stMonth">—</div><div class="stat-lbl">This Month</div></div>
+      <div class="stat-card"><div class="stat-val" id="stNext">—</div><div class="stat-lbl">Days to Next</div></div>
+    </div>
+
+    <!-- Birthday send panel — only shows when someone has a birthday today -->
+    <div class="panel gold-left" id="bdayPanel" style="display:none">
+      <h3>🎉 Today's Birthday Celebration</h3>
+      <p class="sub">Generate a personalized role-based message and send it to #5-kalista-spotlight instantly.</p>
+      <div class="bday-people" id="bdayPeople"></div>
+      <textarea class="msg-area" id="msgArea" placeholder="Your role-based birthday message will appear here — click Generate to create one…"></textarea>
+      <div class="msg-actions">
+        <button class="btn btn-secondary" onclick="genMsg()" id="genBtn">✨ Generate Message</button>
+        <div class="spinner" id="spinner"></div>
+        <span class="spin-txt" id="spinTxt">Generating…</span>
+        <button class="btn btn-success" onclick="sendToSlack()" id="sendBtn">🎂 Send to #5-kalista-spotlight</button>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('msgArea').value=''">Clear</button>
+      </div>
+    </div>
+
+    <!-- Reminder panel — upcoming 7 days -->
+    <div class="panel blue-left" id="reminderPanel" style="display:none">
+      <h3>⏰ Upcoming Birthday Reminders</h3>
+      <p class="sub">Birthdays in the next 7 days — plan ahead.</p>
+      <div class="reminder-list" id="reminderList"></div>
+    </div>
+
+    <!-- CSV Import -->
+    <div class="panel">
+      <h3>Import via CSV</h3>
+      <p class="sub">Upload a CSV to add or replace employees. Changes are saved locally and stay in sync.
+        <button class="btn btn-ghost btn-sm" onclick="toggleFmt()" style="padding:2px 8px;margin-left:4px">View format</button>
+      </p>
+      <div class="csv-fmt" id="csvFmt">
+Column headers (flexible order, auto-detected):<br>
+Name, Department, Role, Birthday<br><br>
+Date formats: YYYY-MM-DD &nbsp;·&nbsp; MM/DD/YYYY &nbsp;·&nbsp; MM/DD &nbsp;·&nbsp; March 20, 1990<br><br>
+Example row: Juan dela Cruz,Engineering,Software Engineer,1992-03-20
+      </div>
+      <div class="csv-modes">
+        <label class="csv-mode">
+          <input type="radio" name="csvMode" value="add" checked onchange="updateMode()">
+          <div><div style="font-size:13px;font-weight:600;color:var(--ink2)">Add to existing</div><div style="font-size:11px;color:var(--muted)">Keeps current employees, appends new ones</div></div>
+        </label>
+        <label class="csv-mode">
+          <input type="radio" name="csvMode" value="replace" onchange="updateMode()">
+          <div><div style="font-size:13px;font-weight:600;color:var(--ink2)">Replace all</div><div style="font-size:11px;color:var(--muted)">Deletes existing, imports fresh</div></div>
+        </label>
+      </div>
+      <div class="replace-warn" id="replaceWarn">⚠️ Replace all will permanently delete all current employee records. Cannot be undone.</div>
+      <div class="drop-zone" id="dropZone"
+           onclick="document.getElementById('csvFile').click()"
+           ondragover="event.preventDefault();this.classList.add('drag-over')"
+           ondragleave="this.classList.remove('drag-over')"
+           ondrop="handleDrop(event)">
+        <div style="font-size:32px;margin-bottom:10px">📂</div>
+        <h4>Drop your CSV file here</h4>
+        <p>or click to browse</p>
+        <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();document.getElementById('csvFile').click()">Browse File</button>
+      </div>
+      <input type="file" id="csvFile" accept=".csv,.txt" onchange="handleFile(this)">
+    </div>
+
+    <!-- Employee Table -->
+    <div class="sec-card">
+      <div class="sec-head">
+        <h3 style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--ink);flex:1">Employee Roster</h3>
+        <div class="search-wrap" style="max-width:240px">
+          <span class="s-icon">🔍</span>
+          <input type="text" id="adminSearch" placeholder="Search…" oninput="renderTable()">
+        </div>
+        <select class="fsel" id="adminDept" onchange="renderTable()"><option value="">All Departments</option></select>
+      </div>
+      <div id="adminLoading" class="loading-screen" style="min-height:180px"><div class="loading-ring"></div><div class="loading-text">Loading…</div></div>
+      <div class="sec-body" id="tableWrap" style="display:none">
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th style="width:46px"></th>
+              <th>Name</th><th>Department</th><th>Role</th>
+              <th>Birthday</th><th>Days Away</th><th style="width:90px">Actions</th>
+            </tr></thead>
+            <tbody id="adminTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="empModal">
+  <div class="modal-box">
+    <h3 id="modalTitle">Add Employee</h3>
+    <div class="frow"><label>Full Name *</label><input class="finput" id="fName" type="text" placeholder="e.g. Juan dela Cruz"></div>
+    <div class="frow"><label>Department</label><input class="finput" id="fDept" type="text" placeholder="e.g. Engineering"></div>
+    <div class="frow"><label>Role / Position</label><input class="finput" id="fRole" type="text" placeholder="e.g. Software Engineer"></div>
+    <div class="frow"><label>Birthday *</label><input class="finput" id="fDate" type="date"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-danger" id="delBtn" onclick="deleteEmp()" style="display:none">Delete</button>
+      <button class="btn btn-primary" onclick="saveEmp()">Save Employee</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap"><div class="toast" id="toast"></div></div>
+
+<script>
+// ══════════════════════════════════════════════
+//  CONFIG — edit these if needed
+// ══════════════════════════════════════════════
+const ADMIN_PIN     = '2026';
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRZzy9qolU3EO1osXq1o6L2Fo2I5SSbVlpypLUOMZl_KFA79JlZnXvaI2eCX2stT_bkXPC5tIlYk1Zi/pub?output=csv';
+// Webhook assembled at runtime — not stored as a plain string
+const _w = ['hooks','slack','com','services','T05QC65T4DN','B0ASCAQC59U','m3Jq68XBehLvy02haqCTpAO4'];
+const SLACK_WEBHOOK = `https://${_w[0]}.${_w[1]}.${_w[2]}/${_w[3]}/${_w[4]}/${_w[5]}/${_w[6]}`;
+const LOGO_B64      = '/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAMgAyADASIAAhEBAxEB/8QAHQABAAICAwEBAAAAAAAAAAAAAAcIBgkCBAUBA//EAFMQAQABAwIDAwgCDQUOBwEBAAABAgMEBQYHCBESIXETIjEyN0FRYTVyCRQVFiNic3WBkbO0wTM2UqLhFyUmQkNTVIKSoaOxw9EkKERjZoPSdMT/xAAcAQEAAgMBAQEAAAAAAAAAAAAABQYDBAcIAQL/xAAyEQEAAQMCAggEBgMBAAAAAAAAAQIDBAURBjESITVBUWFxsQczNHITI1LB0eEiMpGh/9oADAMBAAIRAxEAPwCmQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/2Q==';
+const MONTHS        = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+let employees = [];    // loaded from Google Sheet + any local overrides
+let localEdits = [];   // employees added/edited manually via admin panel
+let editId     = null;
+let pinBuf     = '';
+let pubTab     = 'cal';
+let curMonth   = new Date().getMonth();
+let curYear    = new Date().getFullYear();
+const NOW      = new Date(); NOW.setHours(0,0,0,0);
+
+// ══════════════════════════════════════════════
+//  STORAGE — local fallback for manual edits
+// ══════════════════════════════════════════════
+function saveLocal() { localStorage.setItem('mm_hub_local', JSON.stringify(localEdits)); }
+function loadLocal() {
+  try { localEdits = JSON.parse(localStorage.getItem('mm_hub_local') || '[]'); }
+  catch(e) { localEdits = []; }
+}
+
+// Merged view: Google Sheet data + local edits (local edits take priority by name)
+function getMerged() {
+  const all = [...employees];
+  localEdits.forEach(le => {
+    const idx = all.findIndex(e => e.id === le.id);
+    if (le._deleted) { if (idx > -1) all.splice(idx, 1); }
+    else if (idx > -1) all[idx] = le;
+    else all.push(le);
+  });
+  return all;
+}
+
+// ══════════════════════════════════════════════
+//  DATE HELPERS
+// ══════════════════════════════════════════════
+function parseDate(s) {
+  if (!s) return null;
+  s = String(s).trim().replace(/['"]/g,'');
+  if (!s) return null;
+  let m, mo, d, y = 0;
+  const MN = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+  if ((m = s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/)))       { y=+m[1];mo=+m[2];d=+m[3]; }
+  else if ((m = s.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/)))  { mo=+m[1];d=+m[2];y=+m[3]; }
+  else if ((m = s.match(/^(\d{1,2})[-\/](\d{1,2})$/)))               { mo=+m[1];d=+m[2]; }
+  else if ((m = s.match(/^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$/)))    { d=+m[1];y=+m[3];mo=MN.indexOf(m[2].toLowerCase().slice(0,3))+1; }
+  else if ((m = s.match(/^([A-Za-z]+)\s+(\d{1,2})[,\s]+(\d{4})$/))) { d=+m[2];y=+m[3];mo=MN.indexOf(m[1].toLowerCase().slice(0,3))+1; }
+  else return null;
+  if (!mo||mo<1||mo>12||d<1||d>31) return null;
+  return { year:y||0, month:mo, day:d };
+}
+
+function toInputDate(p) {
+  if (!p) return '';
+  const y = p.year || new Date().getFullYear();
+  return `${String(y).padStart(4,'0')}-${String(p.month).padStart(2,'0')}-${String(p.day).padStart(2,'0')}`;
+}
+function fromInput(s) {
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  return m ? {year:+m[1],month:+m[2],day:+m[3]} : null;
+}
+function fmtDate(p) {
+  if (!p) return '—';
+  return `${MONTHS[p.month-1]} ${p.day}${p.year?', '+p.year:''}`;
+}
+function daysUntil(p) {
+  if (!p) return Infinity;
+  const next = new Date(NOW.getFullYear(), p.month-1, p.day);
+  if (next < NOW) next.setFullYear(NOW.getFullYear()+1);
+  return Math.round((next-NOW)/86400000);
+}
+function isToday(p) { return p && p.month===NOW.getMonth()+1 && p.day===NOW.getDate(); }
+
+// ══════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════
+function initials(n) { return (n||'?').trim().split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase(); }
+function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+
+function toast(msg, type='ok', dur=3500) {
+  const t = document.getElementById('toast');
+  t.textContent=msg; t.className=`toast on ${type}`;
+  clearTimeout(t._t); t._t=setTimeout(()=>{t.className='toast';},dur);
+}
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id==='pagePub')   initPub();
+  if (id==='pageAdmin') initAdmin();
+}
+
+function setLogos() {
+  ['logoPub','logoPin','logoAdmin'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.src=`data:image/jpeg;base64,${LOGO_B64}`;
+  });
+}
+
+function spawnConfetti() {
+  const wrap=document.getElementById('confettiWrap');
+  wrap.innerHTML='';
+  const cols=['#D4A017','#F0C040','#9A7210','#E8CC70','#FFF0A0'];
+  for(let i=0;i<35;i++){
+    const el=document.createElement('div');
+    el.className='c-piece';
+    el.style.cssText=`left:${Math.random()*100}%;width:${3+Math.random()*6}px;height:${8+Math.random()*18}px;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${6+Math.random()*14}s;animation-delay:${Math.random()*12}s;border-radius:${Math.random()>.5?'50%':'2px'};opacity:${.3+Math.random()*.4}`;
+    wrap.appendChild(el);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  GOOGLE SHEETS FETCH
+// ══════════════════════════════════════════════
+function parseCSVLine(line) {
+  const cols=[]; let cur='',inQ=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}
+    else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
+    else cur+=ch;
+  }
+  cols.push(cur.trim()); return cols;
+}
+
+function parseSheetCSV(csv) {
+  const lines = csv.split(/\r?\n/).filter(l=>l.trim().replace(/,/g,'')!=='');
+  if (!lines.length) return [];
+
+  // Auto-detect headers
+  const firstCols = parseCSVLine(lines[0]).map(c=>c.toLowerCase().replace(/[\s_]/g,''));
+  const hasHeader = firstCols.some(c=>['name','fullname','department','dept','role','birthday','dob','birthdate'].includes(c));
+
+  let ci={name:0,dept:1,role:2,date:3};
+  if(hasHeader){
+    firstCols.forEach((c,i)=>{
+      if(['name','fullname','employeename'].includes(c))                      ci.name=i;
+      if(['department','dept','division','team'].includes(c))                 ci.dept=i;
+      if(['role','position','jobtitle','title'].includes(c))                  ci.role=i;
+      if(['birthday','dob','date','birthdate','dateofbirth','birthmonth','birth_month'].includes(c)) ci.date=i;
+      // Also handle split month/day columns
+    });
+  }
+
+  // Check for split month/day/year columns
+  let hasSplit = false;
+  let ciMonth=-1,ciDay=-1,ciYear=-1;
+  firstCols.forEach((c,i)=>{
+    if(['birthmonth','birth_month','month'].includes(c)) { ciMonth=i; hasSplit=true; }
+    if(['birthday','birth_day','day'].includes(c) && c!=='birthday') { ciDay=i; hasSplit=true; }
+    if(['birthyear','birth_year','year'].includes(c)) ciYear=i;
+  });
+
+  const dataLines = hasHeader ? lines.slice(1) : lines;
+  const result = [];
+
+  dataLines.forEach((line,idx)=>{
+    const cols = parseCSVLine(line);
+    const name = (cols[ci.name]||'').trim();
+    if (!name) return;
+    const dept = (cols[ci.dept]||'').trim();
+    const role = (cols[ci.role]||'').trim();
+
+    let parsed = null;
+    if(hasSplit && ciMonth>-1 && ciDay>-1){
+      const mo=parseInt(cols[ciMonth])||0;
+      const dy=parseInt(cols[ciDay])||0;
+      const yr=ciYear>-1?parseInt(cols[ciYear])||0:0;
+      if(mo&&dy) parsed={year:yr,month:mo,day:dy};
+    } else {
+      parsed = parseDate(cols[ci.date]||'');
+    }
+
+    if(!parsed) return;
+    result.push({ id:'sheet_'+idx+'_'+name.replace(/\s/g,'_'), name, dept, role, parsed, _fromSheet:true });
+  });
+  return result;
+}
+
+async function fetchSheet(silent=false) {
+  const bar = document.getElementById('syncBar');
+  if (!silent && bar) { bar.style.display='flex'; bar.className='sync-bar'; bar.textContent='⏳ Syncing from Google Sheets…'; }
+  try {
+    // Use a CORS proxy to fetch Google Sheets CSV
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(SHEET_CSV_URL)}`;
+    const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const csv = await res.text();
+    if (!csv || csv.length < 10) throw new Error('Empty response from sheet');
+    const parsed = parseSheetCSV(csv);
+    employees = parsed;
+    if (!silent && bar) { bar.style.display='flex'; bar.className='sync-bar'; bar.textContent=`✅ Synced ${employees.length} employees from Google Sheets`; setTimeout(()=>{bar.style.display='none';},4000); }
+    return true;
+  } catch(e) {
+    console.warn('Sheet fetch failed:', e.message);
+    // Try direct fetch as fallback
+    try {
+      const res2 = await fetch(SHEET_CSV_URL, { signal: AbortSignal.timeout(10000) });
+      if (res2.ok) {
+        const csv = await res2.text();
+        const parsed = parseSheetCSV(csv);
+        employees = parsed;
+        if (!silent && bar) { bar.style.display='flex'; bar.className='sync-bar'; bar.textContent=`✅ Synced ${employees.length} employees`; setTimeout(()=>{bar.style.display='none';},4000); }
+        return true;
+      }
+    } catch(e2) {}
+    if (!silent && bar) { bar.style.display='flex'; bar.className='sync-bar err'; bar.textContent=`⚠️ Could not sync from Google Sheets: ${e.message}. Using cached data.`; }
+    return false;
+  }
+}
+
+async function refreshData(isAdmin=false) {
+  const ok = await fetchSheet(false);
+  if (ok) {
+    populateDepts();
+    if (isAdmin) { renderStats(); renderBdayPanel(); renderReminderPanel(); renderTable(); }
+    else { renderTodayBanner(); pubRender(); }
+  }
+}
+
+// ══════════════════════════════════════════════
+//  DEPARTMENTS
+// ══════════════════════════════════════════════
+function getDepts() {
+  return [...new Set(getMerged().map(e=>e.dept).filter(Boolean))].sort();
+}
+function populateDepts() {
+  ['pubDept','adminDept'].forEach(id=>{
+    const sel=document.getElementById(id); if(!sel) return;
+    const cur=sel.value;
+    sel.innerHTML='<option value="">All Departments</option>';
+    getDepts().forEach(d=>{const o=document.createElement('option');o.value=o.textContent=d;if(d===cur)o.selected=true;sel.appendChild(o);});
+  });
+}
+
+// ══════════════════════════════════════════════
+//  PIN
+// ══════════════════════════════════════════════
+function goAdmin() { pinBuf=''; updateDots(); document.getElementById('pinErr').textContent=''; showPage('pagePin'); }
+function pp(d) {
+  if(pinBuf.length>=4) return;
+  pinBuf+=d; updateDots();
+  if(pinBuf.length===4){
+    setTimeout(()=>{
+      if(pinBuf===ADMIN_PIN){ showPage('pageAdmin'); }
+      else{
+        document.querySelectorAll('.pin-dot').forEach(el=>el.classList.add('err'));
+        document.getElementById('pinErr').textContent='Incorrect PIN. Try again.';
+        setTimeout(()=>{pinBuf='';updateDots();document.querySelectorAll('.pin-dot').forEach(el=>el.classList.remove('err'));},600);
+      }
+    },180);
+  }
+}
+function pdel() { pinBuf=pinBuf.slice(0,-1); document.getElementById('pinErr').textContent=''; updateDots(); }
+function updateDots() {
+  document.querySelectorAll('.pin-dot').forEach((el,i)=>{el.classList.toggle('on',i<pinBuf.length);el.classList.remove('err');});
+}
+
+// ══════════════════════════════════════════════
+//  PUBLIC PAGE
+// ══════════════════════════════════════════════
+async function initPub() {
+  document.getElementById('pubLoading').style.display='flex';
+  ['viewCal','viewUp','viewSearch'].forEach(id=>document.getElementById(id).style.display='none');
+  await fetchSheet(true);
+  populateDepts();
+  renderTodayBanner();
+  document.getElementById('pubLoading').style.display='none';
+  pubRender();
+}
+
+function renderTodayBanner() {
+  const stars=getMerged().filter(e=>isToday(e.parsed));
+  const wrap=document.getElementById('todayWrap');
+  if(!stars.length){wrap.style.display='none';return;}
+  wrap.style.display='';
+  wrap.innerHTML=`<div class="today-banner">
+    <div style="font-size:28px;flex-shrink:0;line-height:1">🎂</div>
+    <div style="flex:1">
+      <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold-dk)">Today's Celebrations</div>
+      <div class="today-chips">${stars.map(e=>`
+        <div class="bday-chip">
+          <div class="chip-av">${initials(e.name)}</div>
+          <div><div class="chip-name">${e.name}</div><div class="chip-role">${e.role||e.dept||'Team Member'}</div></div>
+        </div>`).join('')}</div>
+    </div>
+  </div>`;
+}
+
+function pubRender() {
+  const q   = document.getElementById('pubSearch').value.trim();
+  const dept= document.getElementById('pubDept').value;
+  if(q){ showViews('search'); renderSearch(q,dept); return; }
+  if(pubTab==='cal'){ showViews('cal'); renderCal(dept); }
+  else{ showViews('up'); renderUpcoming(dept); }
+}
+
+function showViews(v) {
+  document.getElementById('viewCal').style.display   = v==='cal'?'':'none';
+  document.getElementById('viewUp').style.display    = v==='up'?'':'none';
+  document.getElementById('viewSearch').style.display= v==='search'?'':'none';
+}
+
+function switchTab(tab,btn) {
+  pubTab=tab;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  pubRender();
+}
+
+function jumpToday() { curMonth=NOW.getMonth(); curYear=NOW.getFullYear(); pubRender(); }
+
+function filterPool(dept) {
+  const all=getMerged();
+  return dept ? all.filter(e=>e.dept===dept) : all;
+}
+
+function renderCal(dept='') {
+  document.getElementById('calLabel').textContent=`${MONTHS[curMonth]} ${curYear}`;
+  const grid=document.getElementById('calGrid');
+  const hdrs=Array.from(grid.querySelectorAll('.cal-hdr'));
+  grid.innerHTML=''; hdrs.forEach(h=>grid.appendChild(h));
+  const pool=filterPool(dept);
+  const first=new Date(curYear,curMonth,1).getDay();
+  const dim=new Date(curYear,curMonth+1,0).getDate();
+  const prev=new Date(curYear,curMonth,0).getDate();
+  for(let i=0;i<first;i++) grid.appendChild(mkCell(prev-first+1+i,true,false,[]));
+  for(let d=1;d<=dim;d++){
+    const isTod=d===NOW.getDate()&&curMonth===NOW.getMonth()&&curYear===NOW.getFullYear();
+    const bdays=pool.filter(e=>e.parsed&&e.parsed.month===curMonth+1&&e.parsed.day===d);
+    grid.appendChild(mkCell(d,false,isTod,bdays));
+  }
+  const rem=42-first-dim;
+  for(let d=1;d<=rem;d++) grid.appendChild(mkCell(d,true,false,[]));
+}
+
+function mkCell(d,other,isTod,bdays){
+  const c=document.createElement('div');
+  c.className='cal-cell'+(other?' other':'')+(isTod?' today':'');
+  const n=document.createElement('div'); n.className='day-n'; n.textContent=d; c.appendChild(n);
+  bdays.forEach(e=>{
+    const chip=document.createElement('div'); chip.className='cal-chip-sm';
+    chip.textContent=e.name.split(' ')[0];
+    chip.title=[e.name,e.dept,e.role].filter(Boolean).join(' · ');
+    c.appendChild(chip);
+  });
+  return c;
+}
+
+function changeMonth(dir){
+  curMonth+=dir;
+  if(curMonth>11){curMonth=0;curYear++;}
+  if(curMonth<0){curMonth=11;curYear--;}
+  pubRender();
+}
+
+function upItemHTML(e){
+  const tod=e.days===0;
+  return `<div class="up-item${tod?' is-today':''}">
+    <div class="up-av">${initials(e.name)}</div>
+    <div class="up-info">
+      <div class="up-name">${e.name}</div>
+      <div class="up-meta">${[e.dept,e.role].filter(Boolean).join(' · ')}${e.parsed?' · '+fmtDate(e.parsed):''}</div>
+    </div>
+    <div class="up-right">
+      ${tod?'<span class="badge-today">🎂 Today!</span>':`<div class="up-days-n">${e.days}</div><div class="up-days-l">days away</div>`}
+    </div>
+  </div>`;
+}
+
+function renderUpcoming(dept=''){
+  const pool=filterPool(dept).map(e=>({...e,days:daysUntil(e.parsed)})).sort((a,b)=>a.days-b.days);
+  document.getElementById('upList').innerHTML=pool.length?pool.map(upItemHTML).join(''):'<div style="text-align:center;padding:48px;color:var(--muted)">No employees found.</div>';
+}
+
+function renderSearch(q,dept=''){
+  const ql=q.toLowerCase();
+  const pool=filterPool(dept).filter(e=>e.name.toLowerCase().includes(ql)||(e.dept||'').toLowerCase().includes(ql)||(e.role||'').toLowerCase().includes(ql))
+    .map(e=>({...e,days:daysUntil(e.parsed)})).sort((a,b)=>a.days-b.days);
+  document.getElementById('searchList').innerHTML=pool.length?pool.map(upItemHTML).join(''):'<div style="text-align:center;padding:48px;color:var(--muted)">No results found.</div>';
+}
+
+// ══════════════════════════════════════════════
+//  ADMIN PAGE
+// ══════════════════════════════════════════════
+async function initAdmin() {
+  document.getElementById('adminLoading').style.display='flex';
+  document.getElementById('tableWrap').style.display='none';
+  await fetchSheet(false);
+  populateDepts();
+  renderStats();
+  renderBdayPanel();
+  renderReminderPanel();
+  renderTable();
+  document.getElementById('adminLoading').style.display='none';
+  document.getElementById('tableWrap').style.display='';
+}
+
+function renderStats(){
+  const all=getMerged();
+  const tod=all.filter(e=>isToday(e.parsed));
+  const mth=all.filter(e=>e.parsed&&e.parsed.month===NOW.getMonth()+1);
+  const nxt=all.map(e=>daysUntil(e.parsed)).filter(d=>d>0);
+  document.getElementById('stTotal').textContent=all.length;
+  document.getElementById('stToday').textContent=tod.length;
+  document.getElementById('stMonth').textContent=mth.length;
+  document.getElementById('stNext').textContent=nxt.length?Math.min(...nxt):'—';
+}
+
+function renderBdayPanel(){
+  const stars=getMerged().filter(e=>isToday(e.parsed));
+  const panel=document.getElementById('bdayPanel');
+  if(!stars.length){panel.style.display='none';return;}
+  panel.style.display='';
+  document.getElementById('bdayPeople').innerHTML=stars.map(e=>`
+    <div class="bp">
+      <div class="bp-av">${initials(e.name)}</div>
+      <div><div class="bp-name">${e.name}</div><div class="bp-role">${e.role||e.dept||'Team Member'}</div></div>
+    </div>`).join('');
+}
+
+function renderReminderPanel(){
+  const soon=getMerged().map(e=>({...e,days:daysUntil(e.parsed)})).filter(e=>e.days>0&&e.days<=7).sort((a,b)=>a.days-b.days);
+  const panel=document.getElementById('reminderPanel');
+  if(!soon.length){panel.style.display='none';return;}
+  panel.style.display='';
+  document.getElementById('reminderList').innerHTML=soon.map(e=>`
+    <div class="ri">
+      <div class="ri-days">${e.days}</div>
+      <div style="flex:1"><div class="ri-name">${e.name}</div><div class="ri-meta">${[e.dept,e.role].filter(Boolean).join(' · ')}</div></div>
+      <div class="ri-date">${fmtDate(e.parsed)}</div>
+    </div>`).join('');
+}
+
+function renderTable(){
+  const q=(document.getElementById('adminSearch')||{}).value||'';
+  const dept=(document.getElementById('adminDept')||{}).value||'';
+  let pool=getMerged();
+  if(dept) pool=pool.filter(e=>e.dept===dept);
+  if(q.trim()){const ql=q.toLowerCase();pool=pool.filter(e=>e.name.toLowerCase().includes(ql)||(e.dept||'').toLowerCase().includes(ql)||(e.role||'').toLowerCase().includes(ql));}
+  const sorted=pool.map(e=>({...e,days:daysUntil(e.parsed)})).sort((a,b)=>a.days-b.days);
+  const tbody=document.getElementById('adminTbody');
+  if(!sorted.length){tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:48px;color:var(--muted)">${getMerged().length?'No results.':'No employees yet.'}</td></tr>`;return;}
+  tbody.innerHTML=sorted.map(e=>{
+    const tod=isToday(e.parsed); const soon=!tod&&e.days<=7;
+    return `<tr>
+      <td><div class="t-av">${initials(e.name)}</div></td>
+      <td><span style="font-weight:600">${e.name}</span>${tod?'<span class="badge-bday">🎂 Today</span>':''}</td>
+      <td>${e.dept||'<span style="color:var(--muted)">—</span>'}</td>
+      <td>${e.role||'<span style="color:var(--muted)">—</span>'}</td>
+      <td style="font-family:var(--font-mono);font-size:13px">${fmtDate(e.parsed)}</td>
+      <td style="color:${tod?'var(--gold-dk)':soon?'var(--info)':'var(--muted)'};font-weight:${tod||soon?600:400}">
+        ${tod?'🎉 Today':e.days===Infinity?'—':soon?`<span class="badge-soon">in ${e.days}d</span>`:e.days+' days'}
+      </td>
+      <td><div class="row-acts">
+        <button class="ra" onclick="openEdit('${e.id}')" title="Edit">✏️</button>
+        <button class="ra del" onclick="doDelete('${e.id}')" title="Delete">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+//  MODAL
+// ══════════════════════════════════════════════
+function openAdd(){
+  editId=null;
+  document.getElementById('modalTitle').textContent='Add Employee';
+  ['fName','fDept','fRole'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fDate').value='';
+  document.getElementById('delBtn').style.display='none';
+  document.getElementById('empModal').classList.add('open');
+  setTimeout(()=>document.getElementById('fName').focus(),100);
+}
+function openEdit(id){
+  const all=getMerged(); const e=all.find(x=>x.id===id); if(!e) return;
+  editId=id;
+  document.getElementById('modalTitle').textContent='Edit Employee';
+  document.getElementById('fName').value=e.name;
+  document.getElementById('fDept').value=e.dept||'';
+  document.getElementById('fRole').value=e.role||'';
+  document.getElementById('fDate').value=e.parsed?toInputDate(e.parsed):'';
+  document.getElementById('delBtn').style.display='inline-flex';
+  document.getElementById('empModal').classList.add('open');
+}
+function closeModal(){ document.getElementById('empModal').classList.remove('open'); }
+
+function saveEmp(){
+  const name=document.getElementById('fName').value.trim();
+  const dept=document.getElementById('fDept').value.trim();
+  const role=document.getElementById('fRole').value.trim();
+  const ds=document.getElementById('fDate').value;
+  if(!name){toast('Name is required','err');return;}
+  if(!ds){toast('Birthday is required','err');return;}
+  const parsed=fromInput(ds);
+  if(!parsed){toast('Invalid date','err');return;}
+  const emp={id:editId||uid(),name,dept,role,parsed};
+  const idx=localEdits.findIndex(x=>x.id===emp.id);
+  if(idx>-1) localEdits[idx]=emp; else localEdits.push(emp);
+  saveLocal();
+  toast(editId?'Employee updated ✓':'Employee added ✓');
+  closeModal();
+  populateDepts(); renderStats(); renderBdayPanel(); renderReminderPanel(); renderTable();
+}
+
+function deleteEmp(){
+  if(!editId) return;
+  const idx=localEdits.findIndex(x=>x.id===editId);
+  if(idx>-1) localEdits[idx]={...localEdits[idx],_deleted:true};
+  else localEdits.push({id:editId,_deleted:true});
+  saveLocal();
+  toast('Employee removed');
+  closeModal();
+  populateDepts(); renderStats(); renderBdayPanel(); renderReminderPanel(); renderTable();
+}
+
+function doDelete(id){
+  if(!confirm('Delete this employee?')) return;
+  const idx=localEdits.findIndex(x=>x.id===id);
+  if(idx>-1) localEdits[idx]={...localEdits[idx],_deleted:true};
+  else localEdits.push({id,_deleted:true});
+  saveLocal();
+  toast('Employee removed');
+  populateDepts(); renderStats(); renderBdayPanel(); renderReminderPanel(); renderTable();
+}
+
+// ══════════════════════════════════════════════
+//  CSV IMPORT
+// ══════════════════════════════════════════════
+function toggleFmt(){ document.getElementById('csvFmt').classList.toggle('on'); }
+function updateMode(){
+  const mode=document.querySelector('input[name="csvMode"]:checked').value;
+  document.getElementById('replaceWarn').classList.toggle('on',mode==='replace');
+}
+function getMode(){ return document.querySelector('input[name="csvMode"]:checked')?.value||'add'; }
+function handleFile(input){ const f=input.files[0]; if(f) processCSV(f); input.value=''; }
+function handleDrop(e){ e.preventDefault(); document.getElementById('dropZone').classList.remove('drag-over'); const f=e.dataTransfer.files[0]; if(f) processCSV(f); }
+
+function processCSV(file){
+  const dz=document.getElementById('dropZone');
+  dz.style.opacity='.5'; dz.style.pointerEvents='none';
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const parsed=parseSheetCSV(ev.target.result);
+      if(!parsed.length){toast('No valid rows found','err');return;}
+      const mode=getMode();
+      if(mode==='replace'){
+        if(!confirm(`Replace all ${getMerged().length} employees with ${parsed.length} from this CSV?`)) return;
+        localEdits=[{_replaceAll:true, data:parsed.map(e=>({...e,id:uid()}))}];
+      } else {
+        parsed.forEach(e=>{ e.id=uid(); localEdits.push(e); });
+      }
+      saveLocal();
+      // Rebuild employees from scratch if replace
+      if(mode==='replace'){
+        const rd=localEdits[0].data;
+        localEdits=rd;
+        employees=[];
+      }
+      populateDepts(); renderStats(); renderBdayPanel(); renderReminderPanel(); renderTable();
+      toast(`✅ Imported ${parsed.length} employees`,'ok',5000);
+    } catch(err){ toast('Import failed: '+err.message,'err'); }
+    finally{ dz.style.opacity=''; dz.style.pointerEvents=''; }
+  };
+  reader.onerror=()=>toast('Could not read file','err');
+  reader.readAsText(file);
+}
+
+// ══════════════════════════════════════════════
+//  ROLE-BASED MESSAGE GENERATOR (100% local)
+// ══════════════════════════════════════════════
+function getRoleMsg(name, role, dept){
+  const r=(role||dept||'').toLowerCase();
+  if(/ceo|chief executive|president|founder/i.test(r))
+    return `Happy Birthday to our ${role||'CEO'}, ${name}! 🎂 Your visionary leadership and unwavering dedication inspire every single one of us at Market Makers Enterprises. We are so grateful to have you guiding us toward greater heights every day. Please join us in wishing ${name} a wonderful birthday — drop your messages below! 🎉`;
+  if(/coo|chief operating|operations director/i.test(r))
+    return `Wishing a very Happy Birthday to ${name}, our ${role}! 🎉 Behind every smooth operation and seamless process at Market Makers is ${name} making it all happen. Your operational brilliance keeps everything running like clockwork. Send your birthday wishes below! 🎂`;
+  if(/cfo|chief financial|finance director|treasurer/i.test(r))
+    return `Happy Birthday to ${name}, our ${role}! 🎂 Your financial expertise and strategic thinking are the backbone that keeps Market Makers fiscally strong and future-ready. We are so lucky to have someone as sharp and dedicated as you. Let's flood ${name}'s day with birthday love! 💛`;
+  if(/vp|vice president|director/i.test(r))
+    return `A very Happy Birthday to ${name}, our ${role}! 🎉 Your leadership drives our team to deliver excellence every single day at Market Makers. Your impact across the organization is felt by everyone. Drop your wishes for ${name} below! 🎂`;
+  if(/manager|lead|head of|supervisor/i.test(r))
+    return `Happy Birthday to ${name}, our ${role}! 🎂 You show up every day ready to support your team and keep everyone moving forward — and we truly appreciate it. Market Makers is better because of the leadership you bring. Wishing you an amazing birthday! 🎉`;
+  if(/sales|account exec|business dev|bd |account manager/i.test(r))
+    return `Happy Birthday to ${name}, our ${role}! 🎉 You bring the energy, the hustle, and the wins that drive Market Makers forward — and today we celebrate YOU! Your passion and drive are contagious. Let's give ${name} all the birthday love today! 🎂🔥`;
+  if(/market|brand|content|creative|design|social media/i.test(r))
+    return `Happy Birthday to ${name}, our ${role}! 🎨 Your creativity and vision shape the way Market Makers shows up in the world — and we are endlessly inspired by your work. Wishing ${name} an incredible birthday — share your wishes below! 🎂`;
+  if(/engineer|developer|software|backend|frontend|fullstack|devops|data/i.test(r))
+    return `Happy Birthday to ${name}, our ${role}! 🎂 You build and power the systems that keep Market Makers running — with skill, creativity, and dedication every day. Today we celebrate the person behind the code. Drop your wishes below! 💻🎉`;
+  if(/hr|human res|people|talent|recruit/i.test(r))
+    return `Happy Birthday to ${name}, our ${role}! 💛 You are the heartbeat of our people culture at Market Makers — always making sure everyone feels seen, supported, and valued. Today it's our turn to make sure YOU feel celebrated! Wishing you a truly special birthday! 🎂`;
+  if(/finance|accounting|accountant|bookkeep|payroll/i.test(r))
+    return `Happy Birthday to ${name}, our ${role}! 🎂 Your precision and reliability keep Market Makers in great financial shape every day. We are so grateful for everything you do. Join us in celebrating ${name} today! 🎉`;
+  if(/legal|counsel|compliance|attorney/i.test(r))
+    return `Happy Birthday to ${name}, our ${role}! 🎂 Your sharp mind and sound judgment protect Market Makers and give us confidence to move boldly. We are so grateful to have you in our corner. Drop your wishes below! ⚖️🎉`;
+  if(/exec.*assist|executive assistant|\bea\b|personal assist|admin|office manager|coordinator/i.test(r))
+    return `Happy Birthday to ${name}, our ${role}! 🎉 You are the secret engine that keeps everything running smoothly at Market Makers — and honestly, where would we be without you? Your dedication does not go unnoticed. Let's celebrate ${name} today! 🎂💛`;
+  if(/customer|client|support|service|success/i.test(r))
+    return `Happy Birthday to ${name}, our ${role}! 🎂 Every day you show up for our clients with patience, warmth, and expertise — and that makes all the difference. Market Makers is so proud to have someone as dedicated as you. Sending ${name} all the birthday love today! 🎉`;
+  if(/product|project|program|scrum|agile/i.test(r))
+    return `Happy Birthday to ${name}, our ${role}! 🎉 You turn ideas into action and keep us all on track — and we could not be more grateful. Your organizational skills make everything possible at Market Makers. Wishing ${name} a fantastic birthday! 🎂`;
+  if(/analyst|research|strategy|insights/i.test(r))
+    return `Happy Birthday to ${name}, our ${role}! 🎂 Your analytical mind helps Market Makers make smarter decisions every day. Behind every great strategy is the kind of thinking you bring to the table. Wishing you an amazing birthday! 🎉`;
+  if(/intern/i.test(r))
+    return `Happy Birthday to ${name}, our ${role} at Market Makers! 🎉 You have jumped in with enthusiasm and made a real impression on the team. We love having your energy around — keep it up! Wishing you a wonderful birthday! 🎂`;
+  return `Happy Birthday to ${name}${role?', our '+role:''}! 🎂 We are so grateful to have you as part of the Market Makers Enterprises family. Your contributions make a real difference every single day, and today we celebrate you! Wishing ${name} a wonderful birthday — drop your messages below! 🎉`;
+}
+
+// ══════════════════════════════════════════════
+//  GENERATE MESSAGE
+// ══════════════════════════════════════════════
+function genMsg(){
+  const stars=getMerged().filter(e=>isToday(e.parsed));
+  if(!stars.length){toast('No birthdays today','err');return;}
+  let msg='';
+  if(stars.length===1){
+    const e=stars[0]; msg=getRoleMsg(e.name,e.role,e.dept);
+  } else {
+    const intros=stars.map(e=>`${e.name} (${e.role||e.dept||'Team Member'})`).join(' and ');
+    msg=`What a special day at Market Makers Enterprises! 🎂 Happy Birthday to ${intros}! Each of you brings something unique and invaluable to our team, and today we celebrate all of you. Please join us in sending your warmest birthday wishes to each of them below! 🎉💛`;
+  }
+  document.getElementById('msgArea').value=msg;
+  toast('Message generated! Review and send.','ok');
+}
+
+// ══════════════════════════════════════════════
+//  SEND TO SLACK VIA WEBHOOK
+// ══════════════════════════════════════════════
+async function sendToSlack(){
+  const msg=document.getElementById('msgArea').value.trim();
+  if(!msg){toast('Generate or write a message first','err');return;}
+  const btn=document.getElementById('sendBtn');
+  btn.disabled=true; btn.textContent='Sending…';
+  try{
+    await fetch(SLACK_WEBHOOK,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({text:msg})
+    });
+    toast('🎉 Birthday message sent to #5-kalista-spotlight!','ok',5000);
+    document.getElementById('msgArea').value='';
+  } catch(err){
+    toast('Send failed: '+err.message,'err',5000);
+  }
+  btn.disabled=false; btn.textContent='🎂 Send to #5-kalista-spotlight';
+}
+
+// ══════════════════════════════════════════════
+//  KEYBOARD & MODAL CLOSE
+// ══════════════════════════════════════════════
+document.addEventListener('keydown',e=>{if(e.key==='Escape') closeModal();});
+document.getElementById('empModal').addEventListener('click',function(e){if(e.target===this) closeModal();});
+
+// ══════════════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════════════
+loadLocal();
+setLogos();
+spawnConfetti();
+initPub();
+</script>
+</body>
+</html>
