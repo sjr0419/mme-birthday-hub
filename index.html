@@ -494,7 +494,11 @@ Example row: Juan dela Cruz,Engineering,Software Engineer,1992-03-20
 //  CONFIG — edit these if needed
 // ══════════════════════════════════════════════
 const ADMIN_PIN     = '2026';
-const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRZzy9qolU3EO1osXq1o6L2Fo2I5SSbVlpypLUOMZl_KFA79JlZnXvaI2eCX2stT_bkXPC5tIlYk1Zi/pub?output=csv';
+// Google Apps Script Web App — primary data source (no CORS issues)
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwy616j-YCYuLUWJdzBTqptWwZ1FbFL5RpXso2gEXB6Qr6bwKgyWs8yk2t3LWFGEjqo/exec';
+// Google Sheets published CSV URL — fallback
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRZzy9qolU3EO1osXq1o6L2Fo2I5SSbVlpypLUOMZl_KFA79JlZnXvaI2eCX2stT_bkXPC5tIlYk1Zi/pub?gid=1252896496&single=true&output=csv';
+const SHEET_JSON_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRZzy9qolU3EO1osXq1o6L2Fo2I5SSbVlpypLUOMZl_KFA79JlZnXvaI2eCX2stT_bkXPC5tIlYk1Zi/pub?gid=1252896496&single=true&output=tsv';
 // Webhook assembled at runtime — not stored as a plain string
 const _w = ['hooks','slack','com','services','T05QC65T4DN','B0ASCAQC59U','m3Jq68XBehLvy02haqCTpAO4'];
 const SLACK_WEBHOOK = `https://${_w[0]}.${_w[1]}.${_w[2]}/${_w[3]}/${_w[4]}/${_w[5]}/${_w[6]}`;
@@ -626,6 +630,61 @@ function parseCSVLine(line) {
   cols.push(cur.trim()); return cols;
 }
 
+
+
+function parseSheetTSV(tsv) {
+  // TSV uses tabs as delimiter — convert to CSV-compatible format and reuse parser
+  const lines = tsv.split(/\r?\n/).filter(l => l.trim() !== '');
+  if (!lines.length) return [];
+  // Parse TSV by splitting on tabs
+  const parsedLines = lines.map(line => line.split('\t').map(c => c.trim()));
+  return parseRowData(parsedLines);
+}
+
+function parseRowData(rows) {
+  const MONTH_NAMES = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+  function monthNameToNum(s) {
+    if (!s) return 0;
+    const n = parseInt(s);
+    if (!isNaN(n) && n >= 1 && n <= 12) return n;
+    const idx = MONTH_NAMES.indexOf(String(s).toLowerCase().trim());
+    return idx >= 0 ? idx + 1 : 0;
+  }
+  if (!rows.length) return [];
+  const firstRow = rows[0].map(c => c.toLowerCase().trim());
+  const hasHeader = firstRow.some(c => ['name','department','role','birthday','birth month'].includes(c));
+  let ci = { name:0, dept:1, role:2, birthday:3, month:4, day:5, year:6 };
+  if (hasHeader) {
+    rows[0].forEach((col, i) => {
+      const raw = col.toLowerCase().trim();
+      if (raw === 'name')         ci.name = i;
+      if (raw === 'department')   ci.dept = i;
+      if (raw === 'role')         ci.role = i;
+      if (raw === 'birthday')     ci.birthday = i;
+      if (raw === 'birth month')  ci.month = i;
+      if (raw === 'birth day')    ci.day = i;
+      if (raw === 'birth year')   ci.year = i;
+    });
+  }
+  const dataRows = hasHeader ? rows.slice(1) : rows;
+  const result = [];
+  dataRows.forEach((cols, idx) => {
+    const name = (cols[ci.name] || '').trim();
+    if (!name) return;
+    const dept = (cols[ci.dept] || '').trim();
+    const role = (cols[ci.role] || '').trim();
+    let parsed = null;
+    const mo = monthNameToNum(cols[ci.month] || '');
+    const dy = parseInt(cols[ci.day]) || 0;
+    const yr = parseInt(cols[ci.year]) || 0;
+    if (mo && dy) { parsed = { year: yr, month: mo, day: dy }; }
+    if (!parsed && ci.birthday > -1) { parsed = parseDate(cols[ci.birthday] || ''); }
+    if (!parsed) return;
+    result.push({ id:'sheet_'+idx+'_'+name.replace(/\s/g,'_'), name, dept, role, parsed, _fromSheet:true });
+  });
+  return result;
+}
+
 function parseSheetCSV(csv) {
   const MONTH_NAMES = ['january','february','march','april','may','june','july','august','september','october','november','december'];
 
@@ -702,36 +761,57 @@ async function fetchSheet(silent=false) {
   const bar = document.getElementById('syncBar');
   if (!silent && bar) { bar.style.display='flex'; bar.className='sync-bar'; bar.textContent='⏳ Syncing from Google Sheets…'; }
 
-  // Try multiple CORS proxies in order until one works
-  const proxies = [
-    `https://corsproxy.io/?${encodeURIComponent(SHEET_CSV_URL)}`,
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(SHEET_CSV_URL)}`,
-    `https://cors-anywhere.herokuapp.com/${SHEET_CSV_URL}`,
-    SHEET_CSV_URL  // direct last resort
-  ];
-
-  for (const url of proxies) {
-    try {
-      const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
-      if (!res.ok) continue;
-      const csv = await res.text();
-      if (!csv || csv.length < 20) continue;
-      // Make sure it looks like CSV data not an error page
-      if (csv.trim().startsWith('<')) continue;
-      const parsed = parseSheetCSV(csv);
-      if (!parsed.length) continue;
-      employees = parsed;
-      // Cache in localStorage as fallback
-      try { localStorage.setItem('mm_hub_cache', JSON.stringify({ts: Date.now(), data: employees})); } catch(e) {}
-      if (!silent && bar) { bar.style.display='flex'; bar.className='sync-bar'; bar.textContent=`✅ Synced ${employees.length} employees from Google Sheets`; setTimeout(()=>{bar.style.display='none';},4000); }
-      return true;
-    } catch(e) {
-      console.warn('Proxy failed:', url, e.message);
-      continue;
+  // Method 1: Google Apps Script — best, no CORS issues, returns clean JSON
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, { signal: AbortSignal.timeout(12000) });
+    if (res.ok) {
+      const json = await res.json();
+      if (Array.isArray(json) && json.length > 0) {
+        employees = parseAppsScriptJSON(json);
+        if (employees.length > 0) {
+          try { localStorage.setItem('mm_hub_cache', JSON.stringify({ts: Date.now(), data: employees})); } catch(e) {}
+          if (!silent && bar) { bar.style.display='flex'; bar.className='sync-bar'; bar.textContent=`✅ Synced ${employees.length} employees from Google Sheets`; setTimeout(()=>{bar.style.display='none';},4000); }
+          return true;
+        }
+      }
     }
-  }
+  } catch(e) { console.warn('Apps Script fetch failed:', e.message); }
 
-  // All proxies failed — try loading from cache
+  // Method 2: TSV direct fetch
+  try {
+    const res = await fetch(SHEET_JSON_URL, { signal: AbortSignal.timeout(10000) });
+    if (res.ok) {
+      const text = await res.text();
+      if (text && text.length > 20 && !text.trim().startsWith('<')) {
+        const parsed = parseSheetTSV(text);
+        if (parsed.length > 0) {
+          employees = parsed;
+          try { localStorage.setItem('mm_hub_cache', JSON.stringify({ts: Date.now(), data: employees})); } catch(e) {}
+          if (!silent && bar) { bar.style.display='flex'; bar.className='sync-bar'; bar.textContent=`✅ Synced ${employees.length} employees`; setTimeout(()=>{bar.style.display='none';},4000); }
+          return true;
+        }
+      }
+    }
+  } catch(e) { console.warn('TSV fetch failed:', e.message); }
+
+  // Method 3: CSV via corsproxy.io
+  try {
+    const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(SHEET_CSV_URL)}`, { signal: AbortSignal.timeout(10000) });
+    if (res.ok) {
+      const text = await res.text();
+      if (text && text.length > 20 && !text.trim().startsWith('<')) {
+        const parsed = parseSheetCSV(text);
+        if (parsed.length > 0) {
+          employees = parsed;
+          try { localStorage.setItem('mm_hub_cache', JSON.stringify({ts: Date.now(), data: employees})); } catch(e) {}
+          if (!silent && bar) { bar.style.display='flex'; bar.className='sync-bar'; bar.textContent=`✅ Synced ${employees.length} employees`; setTimeout(()=>{bar.style.display='none';},4000); }
+          return true;
+        }
+      }
+    }
+  } catch(e) { console.warn('Proxy fetch failed:', e.message); }
+
+  // All failed — use cache
   try {
     const cached = JSON.parse(localStorage.getItem('mm_hub_cache') || 'null');
     if (cached && cached.data && cached.data.length) {
@@ -742,8 +822,46 @@ async function fetchSheet(silent=false) {
     }
   } catch(e) {}
 
-  if (!silent && bar) { bar.style.display='flex'; bar.className='sync-bar err'; bar.textContent='⚠️ Could not load from Google Sheets. Make sure the sheet is published to web as CSV.'; }
+  if (!silent && bar) { bar.style.display='flex'; bar.className='sync-bar err'; bar.textContent='⚠️ Could not load from Google Sheets. Please try refreshing.'; }
   return false;
+}
+
+function parseAppsScriptJSON(rows) {
+  // Apps Script returns array of objects with header keys
+  const MONTH_NAMES = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+  function monthNameToNum(s) {
+    if (!s) return 0;
+    const n = parseInt(s);
+    if (!isNaN(n) && n >= 1 && n <= 12) return n;
+    const idx = MONTH_NAMES.indexOf(String(s).toLowerCase().trim());
+    return idx >= 0 ? idx + 1 : 0;
+  }
+  const result = [];
+  rows.forEach((row, idx) => {
+    // Find name — try common header variations
+    const name = (row['Name'] || row['name'] || row['NAME'] || '').toString().trim();
+    if (!name) return;
+    const dept = (row['Department'] || row['department'] || row['Dept'] || '').toString().trim();
+    const role = (row['Role'] || row['role'] || row['Position'] || '').toString().trim();
+
+    let parsed = null;
+
+    // Try split Birth Month / Birth Day / Birth Year
+    const mo = monthNameToNum(row['Birth Month'] || row['birth month'] || row['BirthMonth'] || '');
+    const dy = parseInt(row['Birth Day'] || row['birth day'] || row['BirthDay'] || '') || 0;
+    const yr = parseInt(row['Birth Year'] || row['birth year'] || row['BirthYear'] || '') || 0;
+    if (mo && dy) { parsed = { year: yr, month: mo, day: dy }; }
+
+    // Fallback to Birthday column
+    if (!parsed) {
+      const bday = (row['Birthday'] || row['birthday'] || '').toString().trim();
+      if (bday) parsed = parseDate(bday);
+    }
+
+    if (!parsed) return;
+    result.push({ id: 'sheet_'+idx+'_'+name.replace(/\s/g,'_'), name, dept, role, parsed, _fromSheet: true });
+  });
+  return result;
 }
 
 async function refreshData(isAdmin=false) {
