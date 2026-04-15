@@ -640,34 +640,26 @@ function parseSheetCSV(csv) {
   const lines = csv.split(/\r?\n/).filter(l => l.trim().replace(/,/g,'') !== '');
   if (!lines.length) return [];
 
-  const firstCols = parseCSVLine(lines[0]).map(c => c.toLowerCase().replace(/[\s_]/g,''));
-  const hasHeader = firstCols.some(c => ['name','fullname','department','dept','role','birthday','dob','birthmonth','birthdate','birthmonth'].includes(c));
+  // Detect header row
+  const firstCols = parseCSVLine(lines[0]).map(c => c.toLowerCase().trim());
+  const hasHeader = firstCols.some(c => ['name','department','role','birthday','birth month'].includes(c));
 
-  // Column index map
-  let ci = { name:-1, dept:-1, role:-1, date:-1, month:-1, day:-1, year:-1 };
+  // Map exact column positions from your sheet:
+  // A=Name, B=Department, C=Role, D=Birthday(full date), E=Birth Month, F=Birth Day, G=Birth Year, H=Email
+  let ci = { name:0, dept:1, role:2, birthday:3, month:4, day:5, year:6 };
 
   if (hasHeader) {
-    firstCols.forEach((c, i) => {
-      if (['name','fullname','employeename'].includes(c))                        ci.name=i;
-      if (['department','dept','division','team'].includes(c))                   ci.dept=i;
-      if (['role','position','jobtitle','title'].includes(c))                    ci.role=i;
-      if (['birthday','dob','date','birthdate','dateofbirth'].includes(c))       ci.date=i;
-      if (['birthmonth','birth_month','bmonth','month'].includes(c))             ci.month=i;
-      if (['birthdate','birth_date'].includes(c) && ci.month>-1)                {} // skip if already split
-      if (['birthday','birth_day','bday','day'].includes(c) && c!=='birthday')   ci.day=i;
-      if (['birthyear','birth_year','byear','year'].includes(c))                 ci.year=i;
+    firstCols.forEach((col, i) => {
+      const raw = (parseCSVLine(lines[0])[i] || '').toLowerCase().trim();
+      if (raw === 'name')         ci.name = i;
+      if (raw === 'department')   ci.dept = i;
+      if (raw === 'role')         ci.role = i;
+      if (raw === 'birthday')     ci.birthday = i;
+      if (raw === 'birth month')  ci.month = i;
+      if (raw === 'birth day')    ci.day = i;
+      if (raw === 'birth year')   ci.year = i;
     });
-  } else {
-    // Default column order if no header: Name, Dept, Role, Month, Day, Year
-    ci = { name:0, dept:1, role:2, date:-1, month:3, day:4, year:5 };
   }
-
-  // If name column not found, default to 0
-  if (ci.name === -1) ci.name = 0;
-  if (ci.dept === -1) ci.dept = 1;
-  if (ci.role === -1) ci.role = 2;
-
-  const hasSplit = ci.month > -1 && ci.day > -1;
 
   const dataLines = hasHeader ? lines.slice(1) : lines;
   const result = [];
@@ -676,21 +668,27 @@ function parseSheetCSV(csv) {
     const cols = parseCSVLine(line);
     const name = (cols[ci.name] || '').trim();
     if (!name) return;
+
     const dept = (cols[ci.dept] || '').trim();
     const role = (cols[ci.role] || '').trim();
 
     let parsed = null;
 
-    if (hasSplit) {
-      const mo = monthNameToNum(cols[ci.month] || '');
-      const dy = parseInt(cols[ci.day]) || 0;
-      const yr = ci.year > -1 ? parseInt(cols[ci.year]) || 0 : 0;
-      if (mo && dy) parsed = { year: yr, month: mo, day: dy };
-    } else if (ci.date > -1) {
-      parsed = parseDate(cols[ci.date] || '');
+    // Try Birth Month + Birth Day + Birth Year columns first (most reliable)
+    const mo = monthNameToNum(cols[ci.month] || '');
+    const dy = parseInt(cols[ci.day]) || 0;
+    const yr = parseInt(cols[ci.year]) || 0;
+    if (mo && dy) {
+      parsed = { year: yr, month: mo, day: dy };
+    }
+
+    // Fallback to full Birthday column (Column D: "March 20, 1992")
+    if (!parsed && ci.birthday > -1) {
+      parsed = parseDate(cols[ci.birthday] || '');
     }
 
     if (!parsed) return;
+
     result.push({
       id: 'sheet_' + idx + '_' + name.replace(/\s/g,'_'),
       name, dept, role, parsed, _fromSheet: true
